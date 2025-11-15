@@ -11,6 +11,10 @@
 		{
 			"pattern": "tunnel.amaylin.com/secure",
 			"zone_name": "amaylin.com"
+		},
+		{
+			"pattern": "tunnel.amaylin.com/secure/country",
+			"zone_name": "amaylin.com"
 		}
 	],
 	"account_id": "b681cd340ff546a542ba5bcb4a473406",
@@ -20,7 +24,7 @@
 	"r2_buckets": [
 		{
 			"bucket_name": "country-flags",
-			"binding": "country_flags"
+			"binding": "FLAGS"
 		}
 	]
 }
