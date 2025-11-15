@@ -129,7 +129,7 @@ async function handleCountryPage(request, env) {
         <h1>${getCountryName(countryCode)}</h1>
         ${flagHTML}
         <p>Country Code: ${countryCode}</p>
-        <p><a href="/secure">← Back to secure endpoint</a></p>
+        <p><a href="/secure">Back to secure endpoint</a></p>
       </div>
     </body>
     </html>
