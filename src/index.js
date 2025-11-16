@@ -1,3 +1,5 @@
+import styles from './styles.css';
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -19,7 +21,7 @@ export default {
 
 async function handleSecurePage(request) {
   const email = request.headers.get('Cf-Access-Authenticated-User-Email') || 'Unknown';
-  const timestamp = new Date().toISOString();
+  const timestamp = new Date().toLocaleString();
   const country = request.cf?.country || 'XX';
   
   const html = `
@@ -27,29 +29,7 @@ async function handleSecurePage(request) {
     <html>
     <head>
       <title>Secure Endpoint</title>
-      <style>
-        body {
-          font-family: system-ui, -apple-system, sans-serif;
-          max-width: 800px;
-          margin: 50px auto;
-          padding: 20px;
-          background: #f5f5f5;
-        }
-        .card {
-          background: white;
-          padding: 30px;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        a {
-          color: #0066cc;
-          text-decoration: none;
-          font-weight: bold;
-        }
-        a:hover {
-          text-decoration: underline;
-        }
-      </style>
+      <style>${styles}</style>
     </head>
     <body>
       <div class="card">
@@ -68,18 +48,19 @@ async function handleCountryPage(request, env) {
   const countryCode = (request.cf?.country || 'XX').toUpperCase();
   
   // Get flag from R2 bucket
-  const flagKey = `${countryCode}.svg`;
+  const flagKey = `${countryCode.toLowerCase()}.png`;
   const flagObject = await env.FLAGS.get(flagKey);
   
   let flagHTML;
   
   if (flagObject) {
     // Show flag if found
-    const flagSVG = await flagObject.text();
-    flagHTML = `<div class="flag-svg">${flagSVG}</div>`;
+    const flagData = await flagObject.arrayBuffer();
+    const base64Flag = btoa(String.fromCharCode(...new Uint8Array(flagData)));
+    flagHTML = `<div class="flag-png"><img src="data:image/png;base64,${base64Flag}" alt="${countryCode} flag" /></div>`;
   } else {
-    // Show emoji if flag not found
-    flagHTML = `<div class="flag-emoji">${getCountryEmoji(countryCode)}</div>`;
+    // Show message if flag not found
+    flagHTML = `<div class="flag-not-found"><p>Your country flag is not found</p></div>`;
   }
   
   const html = `
@@ -87,42 +68,7 @@ async function handleCountryPage(request, env) {
     <html>
     <head>
       <title>${countryCode} Flag</title>
-      <style>
-        body {
-          font-family: system-ui, -apple-system, sans-serif;
-          max-width: 800px;
-          margin: 50px auto;
-          padding: 20px;
-          text-align: center;
-          background: #f5f5f5;
-        }
-        .card {
-          background: white;
-          padding: 30px;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .flag-svg {
-          margin: 30px 0;
-        }
-        .flag-svg svg {
-          max-width: 400px;
-          height: auto;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-        .flag-emoji {
-          font-size: 200px;
-          margin: 30px 0;
-        }
-        a {
-          color: #0066cc;
-          text-decoration: none;
-        }
-        a:hover {
-          text-decoration: underline;
-        }
-      </style>
+      <style>${styles}</style>
     </head>
     <body>
       <div class="card">

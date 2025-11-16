@@ -26,5 +26,12 @@
 			"bucket_name": "country-flags",
 			"binding": "FLAGS"
 		}
+	],
+	"rules": [
+		{
+			"type": "Text",
+			"globs": ["**/*.css"],
+			"fallthrough": true
+		}
 	]
 }
